@@ -17,7 +17,7 @@ class ToDo(Base):
 
 
     @classmethod
-    def create(cls, request : CreateToDoRequest):
+    def create(cls, request: CreateToDoRequest)-> "ToDo":
         return cls(
             contents=request.contents,
             is_done=request.is_done,
