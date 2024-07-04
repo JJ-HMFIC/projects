@@ -1,5 +1,5 @@
-from sqlalchemy.orm import declarative_base
-from  sqlalchemy import Boolean, Column, Integer, String
+from sqlalchemy.orm import declarative_base, relationship
+from sqlalchemy import Boolean, Column, Integer, String, ForeignKey
 
 from schema.request import CreateToDoRequest
 
@@ -11,6 +11,7 @@ class ToDo(Base):
     id = Column(Integer, primary_key=True, index=True)
     contents = Column(String(256), nullable=False)
     is_done = Column(Boolean, nullable=False)
+    user_id = Column(Integer, ForeignKey("user.id"))
 
     def __repr__(self):
         return f"Todo(id={self.id}, contents={self.contents}, is_done={self.is_done}"
@@ -31,3 +32,21 @@ class ToDo(Base):
     def undone(self) ->"ToDo":
         self.is_done = False
         return self
+
+class User(Base):
+    __tablename__ = "user"
+
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String(256), nullable=False)
+    password = Column(String(256), nullable=False)
+    todos = relationship("ToDo", lazy="joined")
+    # 가상의 릴레이션
+    # user를 조회했을 때 가상의 todos와 join하여 보여준다.
+
+
+    @classmethod
+    def create(cls, username : str, hashed_password : str) -> "User":
+        return cls(
+            username = username,
+            password = hashed_password,
+        )
