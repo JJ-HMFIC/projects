@@ -76,4 +76,4 @@ def delete_todo_handler(
     if not todo:
         raise HTTPException(status_code=404, detail="Todo Not Found")
 
-    delete_todo(session=session, todo_id=todo_id)
+    todo_repo.delete_todo(todo_id=todo_id)

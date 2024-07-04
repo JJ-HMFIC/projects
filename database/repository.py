@@ -5,7 +5,7 @@ from sqlalchemy import select, delete
 from sqlalchemy.orm import Session
 
 from database.connection import get_db
-from database.orm import ToDo
+from database.orm import ToDo, User
 
 
 class ToDoRepository:
@@ -38,3 +38,20 @@ class ToDoRepository:
         self.session.commit()
 
 # 같은 단어 찾기  Alt + J
+
+
+class UserRepository:
+    def __init__(self, session : Session = Depends(get_db)):
+        self.session = session
+    
+    def get_user_by_username(self, username: str) -> User | None:
+        return self.session.scalar(
+            select(User).where(User.username == username))
+
+    
+    def save_user(self, user: User) -> User:
+        self.session.add(instance=user)
+        self.session.commit()  # db save
+        self.session.refresh(instance=user)  # db read -> todo_id 결정
+        return user
+    
